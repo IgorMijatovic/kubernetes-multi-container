@@ -1,0 +1,28 @@
+sudo: required
+services:
+  - docker
+env:
+  gloabl:
+    - GIT-COMMIT = (git rev-parse HEAD)  
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1
+before_install:
+  - openssl .... takes encrypted file , decrypte it and place it in root project , so it can bu used
+  - curl https://sdk.cloud.google.com | bash > /dev/null;
+  - source $HOME/google-cloud-sdk/path.bash.inc
+  - gcloud components update kubectl
+  - gcloud activate-service-account --key-file service-account.json
+  - gcloud config set-project id_of_project_multi_container
+  - gcloud config set compute/zone us-central
+  - gcloud container clusters get-credentials name-of-cluster
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker build -t imijatovic/react-test -f ./client/Dockerfile.dev ./client
+
+
+script:
+  - docker run -e CI=true USERNAME/docker-react npm run test
+
+deploy:
+  provider: script  
+  script: bash ./deploy.sh
+  on:
+    branch: master

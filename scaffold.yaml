@@ -1,0 +1,18 @@
+apiVersion: skaffold/v1beta2
+kind: Config 
+build:
+  local:
+    push: false
+  artifacts:
+    - image: imijatovic/multi-client
+      context: client  
+      docker:
+        dockerfile: Dockerfile.dev
+      sync:
+        '**/*.js': .  
+        '**/*.css': .  
+        '**/*.html': . 
+deploy:
+  kubectl:
+    manifest:
+      - k8s/client-deployment.yaml         

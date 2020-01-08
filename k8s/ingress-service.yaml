@@ -5,9 +5,18 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/rewrite-target: /$1
+    certmanager.k8s.io/cluster-issuer: 'letencrypt-prod'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
 spec:
+  tls:
+    - hosts:
+        - k8s-multie.com
+        - www.k8s-multie.com
+        # zertificate is installed in k8s-multi.com secret
+        secretName: k8s-multi.com
   rules:
-    - http:
+    - host: k8s-multi.com
+      http:
         paths:
           - path: /?(.*)
             backend:
@@ -17,6 +26,17 @@ spec:
             backend:
               serviceName: server-cluster-ip-service
               servicePort: 5000
+    - host: www.k8s-multi.com
+      http:
+        paths:
+          - path: /?(.*)
+            backend:
+              serviceName: client-cluster-ip-service
+              servicePort: 3000
+          - path: /api/?(.*)
+            backend:
+              serviceName: server-cluster-ip-service
+              servicePort: 5000          
                       
 
 

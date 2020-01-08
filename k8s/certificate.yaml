@@ -1,0 +1,20 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: k8-multii-com-tls
+spec:
+  secretname: k8-multi-com  say where cert will be saved
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: k8-multi.com  domain for validation
+  dnsNames:
+    - k8-multi.com
+    - k8-multi.com
+  acme:
+    config:
+        - https01:
+            ingressClass: nginx
+          domains:
+            - k8-multi.com
+            - www.k8s-multi.com  
